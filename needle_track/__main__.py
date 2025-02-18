@@ -23,6 +23,7 @@ Problems:
 import argparse
 import os
 from pathlib import Path
+import json
 
 from needle_track.database_manager import DatabaseManager
 from needle_track.data_injest import ingest_data
@@ -61,6 +62,8 @@ def main():
                              help="Search for objects with a snoozed annotation")
     search_parser.add_argument('-a', '--astronote', action='store_true',
                              help="Search for objects with an astronote annotation")
+    search_parser.add_argument('-l', '--list', action='store_true',
+                             help="List all objects")
 
 
     # Command to add a comment to a transient.
@@ -99,28 +102,77 @@ def main():
 
     if args.command == 'ingest':
         if args.json_file_slsn:
-            ingest_data(db_manager, args.json_file_slsn, 'SLSN')
+            ingest_data(db_manager, args.json_file_slsn, 'SLSN', date_range=30)
         if args.json_file_tde:
-            ingest_data(db_manager, args.json_file_tde, 'TDE')
+            ingest_data(db_manager, args.json_file_tde, 'TDE', date_range=30)
     elif args.command == 'search':
         if args.objectId:
-            result = db_manager.search_by_id(args.objectId)
-            if result:
-                print(result)
+            results = db_manager.search_by_id(args.objectId)
+            if results:
+                for row in results:
+                    print(row)
             else:
                 print("No record found for ZTF ID:", args.objectId)
         elif args.followup:
             results = db_manager.search_by_followup(True)
-            for row in results:
-                print(dict(row))
+            if results:
+                print(f"\nFound {len(results)} objects with followup:")
+                print("-" * 50)
+                for row in results:
+                    print(f"Object ID: {row['objectId']}")
+                    print(f"Link: {row['link']}")
+                    if row['comments']:
+                        print("Comments:")
+                        for comment in row['comments']:
+                            print(f"  - {comment}")
+                    print("-" * 50)
+            else:
+                print("No followup objects found.")
         elif args.snoozed:
             results = db_manager.search_by_snoozed(True)
-            for row in results:
-                print(dict(row))
+            if results:
+                print(f"\nFound {len(results)} objects with snoozed:")
+                print("-" * 50)
+                for row in results:
+                    print(f"Object ID: {row['objectId']}")
+                    print(f"Link: {row['link']}")
+                    if row['comments']:
+                        print("Comments:")
+                        for comment in row['comments']:
+                            print(f"  - {comment}")
+                    print("-" * 50)
+            else:
+                print("No snoozed objects found.")
         elif args.astronote:
             results = db_manager.search_by_astronote(True)
-            for row in results:
-                print(dict(row))
+            if results:
+                print(f"\nFound {len(results)} objects with astronote:")
+                print("-" * 50)
+                for row in results:
+                    print(f"Object ID: {row['objectId']}")
+                    print(f"Link: {row['link']}")
+                    if row['comments']:
+                        print("Comments:")
+                        for comment in row['comments']:
+                            print(f"  - {comment}")
+                    print("-" * 50)
+            else:
+                print("No astronoted objects found.")
+        elif args.list:
+            results = db_manager.search_all()
+            if results:
+                print(f"\nFound {len(results)} objects in the database:")
+                print("-" * 50)
+                for row in results:
+                    print(f"Object ID: {row['objectId']}")
+                    print(f"Link: {row['link']}")
+                    # if len(row['comments']) > 0:
+                    #     print("Comments:")
+                    #     for comment in row['comments']:
+                    #         print(f"  - {comment}")
+                    print("-" * 50)
+            else:
+                print("No objects found.")
         else:
             print("Please provide a search parameter (--objectId, --followup, --snoozed, or --astronote).")
     elif args.command == 'comment':

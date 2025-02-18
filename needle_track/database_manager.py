@@ -153,16 +153,31 @@ class DatabaseManager:
     def mark_as_followup(self, objectId):
         """Mark a transient as followup."""
         try:
+            # First check if object exists
+            cur = self.conn.execute('SELECT objectId FROM transients WHERE objectId = ?', (objectId,))
+            if not cur.fetchone():
+                print(f"Object {objectId} not found in database")
+                return 'error'
+
             now = datetime.now().isoformat()
             self.conn.execute('''
                 UPDATE transients
                 SET is_followup = 1, updated_at = ?
                 WHERE objectId = ?
             ''', (now, objectId))
-            self.conn.commit()
-            return 'success'
+            
+            # Verify the update
+            cur = self.conn.execute('SELECT is_followup FROM transients WHERE objectId = ?', (objectId,))
+            row = cur.fetchone()
+            if row and row['is_followup'] == 1:
+                self.conn.commit()
+                return 'success'
+            else:
+                print(f"Failed to update followup status for {objectId}")
+                return 'error'
+                
         except Exception as e:
-            print(f"Error  marking as followup: {e}")
+            print(f"Error marking as followup: {e}")
             return 'error'
 
     def mark_as_astronote(self, objectId):
@@ -201,18 +216,29 @@ class DatabaseManager:
             return True
         return False
 
+    def search_all(self):
+        """Retrieve all transients."""
+        cur = self.conn.execute('SELECT * FROM transients')
+        results = []
+        for row in cur.fetchall():
+            results.append(dict(row))
+        return results
+    
     def search_by_id(self, objectId):
         """Retrieve a transient by its unique ZTF ID."""
         cur = self.conn.execute('SELECT * FROM transients WHERE objectId = ?', (objectId,))
         row = cur.fetchone()
-        if row:
-            # Convert row to dict and format nested JSON strings
+        if row:  # If we found a record
             result = dict(row)
-            for field in ['classdict', 'explanation', 'is_followup', 'is_snoozed', 'is_astronote', 'comments']:
+            # Parse JSON fields
+            for field in ['properties', 'classdict', 'comments']:
                 if result[field]:
-                    result[field] = json.loads(result[field])
-            return json.dumps(result, indent=2)
-        return None
+                    try:
+                        result[field] = json.loads(result[field])
+                    except (json.JSONDecodeError, TypeError):
+                        pass
+            return [result]  # Return as list for consistency with other search methods
+        return []  # Return empty list if no record found
 
     def search_by_followup(self, has_followup=True):
         """Retrieve transients based on their followup status."""
@@ -221,11 +247,21 @@ class DatabaseManager:
         results = []
         for row in cur.fetchall():
             result = dict(row)
-            for field in ['classdict', 'explanation', 'is_followup', 'is_snoozed', 'is_astronote', 'comments']:
+            # Parse only JSON fields
+            json_fields = ['properties', 'classdict', 'comments']
+            for field in json_fields:
                 if result[field]:
-                    result[field] = json.loads(result[field])
+                    try:
+                        result[field] = json.loads(result[field])
+                    except (json.JSONDecodeError, TypeError):
+                        print(f"Error decoding JSON at Field: {field}")
+                        result[field] = None  # Set to None if parsing fails
+            
+            # Keep link as plain string
+            result['link'] = str(result.get('link', ''))
             results.append(result)
-        return json.dumps(results, indent=2)
+
+        return results
 
     def search_by_astronote(self, has_astronote=True):
         """Retrieve transients based on their astronote (annotation) status."""
@@ -234,11 +270,20 @@ class DatabaseManager:
         results = []
         for row in cur.fetchall():
             result = dict(row)
-            for field in ['classdict', 'explanation', 'is_followup', 'is_snoozed', 'is_astronote', 'comments']:
+            # Parse only JSON fields
+            json_fields = ['properties', 'classdict', 'comments']
+            for field in json_fields:
                 if result[field]:
-                    result[field] = json.loads(result[field])
+                    try:
+                        result[field] = json.loads(result[field])
+                    except (json.JSONDecodeError, TypeError):
+                        print(f"Error decoding JSON at Field: {field}")
+                        result[field] = None  # Set to None if parsing fails
+            
+            # Keep link as plain string
+            result['link'] = str(result.get('link', ''))
             results.append(result)
-        return json.dumps(results, indent=2)
+        return results
 
     def search_by_snoozed(self, has_snoozed=True):
         """Retrieve transients based on their snoozed status."""
@@ -247,11 +292,20 @@ class DatabaseManager:
         results = []
         for row in cur.fetchall():
             result = dict(row)
-            for field in ['classdict', 'explanation', 'is_followup', 'is_snoozed', 'is_astronote', 'comments']:
+            # Parse only JSON fields
+            json_fields = ['properties', 'classdict', 'comments']
+            for field in json_fields:
                 if result[field]:
-                    result[field] = json.loads(result[field])
+                    try:
+                        result[field] = json.loads(result[field])
+                    except (json.JSONDecodeError, TypeError):
+                        print(f"Error decoding JSON at Field: {field}")
+                        result[field] = None  # Set to None if parsing fails
+            
+            # Keep link as plain string
+            result['link'] = str(result.get('link', ''))
             results.append(result)
-        return json.dumps(results, indent=2)
+        return results
     
     def search_updates(self):
         """Retrieve transients that have been updated (are in the Update List)."""
@@ -259,8 +313,17 @@ class DatabaseManager:
         results = []
         for row in cur.fetchall():
             result = dict(row)
-            for field in ['classdict', 'explanation', 'is_followup', 'is_snoozed', 'is_astronote', 'comments']:
+            # Parse only JSON fields
+            json_fields = ['properties', 'classdict', 'comments']
+            for field in json_fields:
                 if result[field]:
-                    result[field] = json.loads(result[field])
+                    try:
+                        result[field] = json.loads(result[field])
+                    except (json.JSONDecodeError, TypeError):
+                        print(f"Error decoding JSON at Field: {field}")
+                        result[field] = None  # Set to None if parsing fails
+            
+            # Keep link as plain string
+            result['link'] = str(result.get('link', ''))
             results.append(result)
-        return json.dumps(results, indent=2)
+        return results
