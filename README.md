@@ -45,25 +45,33 @@ NEEDLE-TRACK is a local system (with future migration potential to cloud or othe
 
 ## **Data Storage**  
 1. **SQL Database Structure**:  
-   - **Follow-up List**: Objects marked for continued observation.  
-   - **New List**: Recently ingested objects.  
-   - **Removed List**: Objects no longer relevant.  
-   - **Astronote List**: Objects with associated annotations.  
-   - **Update List**: Objects that have been updated with new data upon ingestion.
+   - **object table**: list of all objects in the database.
 
 2. **Object Structure**:  
    - **ZTF ID**: Unique identifier from Lasair.  
    - **Object Properties**: Data and metadata from Lasair.  
-   - **Changeable Tags**: Categories or status markers that can be updated.  
+   - **followup**: indicator if the object has been marked for followup.
+   - **snoozed**: indicator if the object has been marked as snoozed.
+   - **astronote**: indicator if the object has been marked as astronote.
    - **Comments**: User-added comments or notes for each object.  
-   - **Astronote Status**: Indicator if the object has an annotation.  
    - **Link**: URL reference to the Lasair entry for further details.
 
 ---
 
-## **Search Functionality**  
-1. **Search by ZTF ID**: Retrieve detailed information for a specific object.  
-2. **Search by Tag**: Filter objects based on assigned or updated categories.  
-3. **Search by Astronote Status**: Identify objects with associated annotations.  
-4. **Review Update List**: Optionally, users can search or filter for objects in the update list to quickly identify recent changes.
-
+## **Tutorial**
+1. **Initialize the database**
+   - `needle_track -i`
+2. **Ingest data**
+   - `needle_track ingest --slsn <path_to_data> --tde <path_to_data>`
+3. **Search for objects**
+   - `needle_track search --objectId/-o <object_id>`
+   - `needle_track search --followup/-f`
+   - `needle_track search --snoozed/-s`
+   - `needle_track search --astronote/-a`
+   - `needle_track search --list/-l`
+4. **Update objects**
+   - `needle_track update --objectId/-o <object_id> --followup/-f`
+   - `needle_track update --objectId/-o <object_id> --snoozed/-s`
+   - `needle_track update --objectId/-o <object_id> --astronote/-a`
+5. **Add comments**
+   - `needle_track comment -o <object_id> -c "This is a comment"`
