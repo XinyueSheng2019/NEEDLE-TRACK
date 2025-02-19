@@ -165,7 +165,6 @@ class DatabaseManager:
                 SET is_followup = 1, updated_at = ?
                 WHERE objectId = ?
             ''', (now, objectId))
-            
             # Verify the update
             cur = self.conn.execute('SELECT is_followup FROM transients WHERE objectId = ?', (objectId,))
             row = cur.fetchone()

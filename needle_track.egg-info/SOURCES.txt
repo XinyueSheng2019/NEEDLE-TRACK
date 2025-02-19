@@ -1,4 +1,6 @@
+MANIFEST.in
 README.md
+environment.yml
 setup.py
 needle_track/__init__.py
 needle_track/__main__.py
@@ -8,4 +10,6 @@ needle_track.egg-info/PKG-INFO
 needle_track.egg-info/SOURCES.txt
 needle_track.egg-info/dependency_links.txt
 needle_track.egg-info/entry_points.txt
+needle_track.egg-info/requires.txt
 needle_track.egg-info/top_level.txt
+needle_track_XinyueAstro/__init__.py
