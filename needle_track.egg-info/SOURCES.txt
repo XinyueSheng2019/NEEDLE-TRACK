@@ -12,4 +12,3 @@ needle_track.egg-info/dependency_links.txt
 needle_track.egg-info/entry_points.txt
 needle_track.egg-info/requires.txt
 needle_track.egg-info/top_level.txt
-needle_track_XinyueAstro/__init__.py

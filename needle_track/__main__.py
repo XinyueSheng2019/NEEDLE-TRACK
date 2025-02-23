@@ -21,9 +21,7 @@ Problems:
 """
 
 import argparse
-import os
 from pathlib import Path
-import json
 
 from needle_track.database_manager import DatabaseManager
 from needle_track.data_injest import ingest_data
@@ -41,16 +39,16 @@ def main():
     parser = argparse.ArgumentParser(description="NEEDLE-TRACK: Transient Recognition Tool")
     parser.add_argument('-i', '--initialize', action='store_true', default=False, 
                        help="Delete all data in the database and initialize a new one")
-    parser.add_argument('--db', default=str(db_path),
+    parser.add_argument('-db', default=str(db_path),
                        help="Path to the database file (default: ~/.needle_track/needle_track.db)")
 
     subparsers = parser.add_subparsers(dest='command', help="Available commands") 
 
     # Command to ingest data from JSON files
     ingest_parser = subparsers.add_parser('ingest', help="Ingest data from JSON files")
-    ingest_parser.add_argument('--slsn', dest='json_file_slsn', 
+    ingest_parser.add_argument('-slsn', dest='json_file_slsn', 
                               help="Path to the JSON file with SLSN data")
-    ingest_parser.add_argument('--tde', dest='json_file_tde',
+    ingest_parser.add_argument('-tde', dest='json_file_tde',
                               help="Path to the JSON file with TDE data")
     
     # Command to search for transients.
@@ -121,10 +119,7 @@ def main():
                 for row in results:
                     print(f"Object ID: {row['objectId']}")
                     print(f"Link: {row['link']}")
-                    if row['comments']:
-                        print("Comments:")
-                        for comment in row['comments']:
-                            print(f"  - {comment}")
+                    print(f"Comments: {row['comments']}")
                     print("-" * 50)
             else:
                 print("No followup objects found.")
@@ -136,10 +131,7 @@ def main():
                 for row in results:
                     print(f"Object ID: {row['objectId']}")
                     print(f"Link: {row['link']}")
-                    if row['comments']:
-                        print("Comments:")
-                        for comment in row['comments']:
-                            print(f"  - {comment}")
+                    print(f"Comments: {row['comments']}")
                     print("-" * 50)
             else:
                 print("No snoozed objects found.")
@@ -151,10 +143,7 @@ def main():
                 for row in results:
                     print(f"Object ID: {row['objectId']}")
                     print(f"Link: {row['link']}")
-                    if row['comments']:
-                        print("Comments:")
-                        for comment in row['comments']:
-                            print(f"  - {comment}")
+                    print(f"Comments: {row['comments']}")
                     print("-" * 50)
             else:
                 print("No astronoted objects found.")
@@ -166,10 +155,7 @@ def main():
                 for row in results:
                     print(f"Object ID: {row['objectId']}")
                     print(f"Link: {row['link']}")
-                    # if len(row['comments']) > 0:
-                    #     print("Comments:")
-                    #     for comment in row['comments']:
-                    #         print(f"  - {comment}")
+                    print(f"Comments: {row['comments']}")
                     print("-" * 50)
             else:
                 print("No objects found.")

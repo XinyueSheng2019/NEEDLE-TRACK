@@ -2,6 +2,7 @@
 # import lasair
 import json 
 from datetime import datetime, timedelta
+import astropy.time as at
 
 
 # --------------------------
@@ -24,12 +25,19 @@ def download_needle_filter(file_path, date_range=8.0):
 
     return data
 
+def convert_date(date_str):
+    return at.Time(date_str, format='isot', scale='utc').jd
+
 def convert_data_scheme(record=dict):
     """
     Convert the data scheme to the required format.
     """
     objectId = record['objectId']
-    classdict = record['classdict']
+    try:    
+        classdict = record['classdict']
+    except KeyError:
+        print("No classdict found for %s" % objectId)
+
     explanation = record['explanation']
     del record['objectId']
     del record['classdict']
@@ -60,9 +68,7 @@ def ingest_data(db_manager, file_path, data_type, date_range=8):
 
     report = {'inserted': 0, 'updated': 0, 'no_change': 0}
     for record in data:
-        # Convert any date strings to datetime objects before comparison
-        if 'jd' in record:
-            record['jd'] = convert_date(record['jd'])
+   
         if 'created_at' in record:
             record['created_at'] = convert_date(record['created_at'])
         if 'updated_at' in record:
