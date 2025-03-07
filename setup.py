@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="needle-track",
-    version="0.1.1",
+    version="0.1.3",
     author="Xinyue Sheng",
     author_email="XinyueSheng@outlook.com",
     description="Transient Recognition, Annotation, and Classification Kit",
@@ -26,7 +26,8 @@ setup(
     },
     install_requires=[
         'numpy',
-        'pandas'
+        'pandas',
+        'astropy'
         # Add other dependencies, see environment.yml
     ],
 ) 

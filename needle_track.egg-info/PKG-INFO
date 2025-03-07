@@ -1,6 +1,6 @@
 Metadata-Version: 2.2
 Name: needle-track
-Version: 0.1.1
+Version: 0.1.3
 Summary: Transient Recognition, Annotation, and Classification Kit
 Home-page: https://github.com/XinyueSheng2019/NEEDLE-TRACK
 Author: Xinyue Sheng
@@ -12,6 +12,7 @@ Requires-Python: >=3.11
 Description-Content-Type: text/markdown
 Requires-Dist: numpy
 Requires-Dist: pandas
+Requires-Dist: astropy
 Dynamic: author
 Dynamic: author-email
 Dynamic: classifier
