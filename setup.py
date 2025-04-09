@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="needle-track",
-    version="0.1.3",
+    version="0.1.4",
     author="Xinyue Sheng",
     author_email="XinyueSheng@outlook.com",
     description="Transient Recognition, Annotation, and Classification Kit",

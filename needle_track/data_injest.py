@@ -83,4 +83,4 @@ def ingest_data(db_manager, file_path, data_type, date_range=8):
             report['no_change'] += 1
 
     print("Ingestion Report for %s:" % data_type)
-    print(json.dumps(report, indent=2))
+    # print(json.dumps(report, indent=2))

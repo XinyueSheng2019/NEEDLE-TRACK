@@ -68,7 +68,7 @@ def main():
     comment_parser = subparsers.add_parser('comment', help="Add a comment to a transient")
     comment_parser.add_argument('-o', '--objectId', required=True,
                               help="ZTF ID of the transient")
-    comment_parser.add_argument('-c', '--comment', required=True,
+    comment_parser.add_argument('comment_text', nargs='+',
                               help="The comment text")
 
     # Command to list updated objects.
@@ -81,13 +81,8 @@ def main():
                               help="List transients with snoozed annotation")
     updates_parser.add_argument('-a', '--astronote', action='store_true',
                               help="List transients with astronote annotation")
-
-    updates_parser.add_argument('-nf', '--no_followup', action='store_false',
-                              help="List transients without followup annotation")
-    updates_parser.add_argument('-ns', '--no_snoozed', action='store_false',
-                              help="List transients without snoozed annotation")
-    updates_parser.add_argument('-na', '--no_astronote', action='store_false',
-                              help="List transients without astronote annotation")
+    updates_parser.add_argument('-c', '--comment', nargs='+',
+                              help="Optional comment to add along with the annotation")
     
     args = parser.parse_args()
     
@@ -161,23 +156,41 @@ def main():
                 print("No objects found.")
         else:
             print("Please provide a search parameter (--objectId, --followup, --snoozed, or --astronote).")
+            
     elif args.command == 'comment':
-        success = db_manager.add_comment(args.objectId, args.comment)
+        comment_text = ' '.join(args.comment_text)
+        success = db_manager.add_comment(args.objectId, comment_text)
         if success:
             print("Comment added successfully to ZTF ID:", args.objectId)
         else:
             print("Record not found for ZTF ID:", args.objectId)
+
     elif args.command == 'update':
         if args.followup:
             result = db_manager.mark_as_followup(args.objectId)
             if result == 'success':
                 print("Followup annotation added successfully to ZTF ID:", args.objectId)
+                if args.comment:
+                    comment_text = ' '.join(args.comment)
+                    comment_success = db_manager.add_comment(args.objectId, comment_text)
+                    if comment_success:
+                        print("Comment added successfully to ZTF ID:", args.objectId)
+                    else:
+                        print("Error adding comment to ZTF ID:", args.objectId)
             else:
                 print("Error adding followup annotation to ZTF ID:", args.objectId)
+
         elif args.snoozed:
             result = db_manager.mark_as_snoozed(args.objectId)
             if result == 'success':
                 print("Snoozed annotation added successfully to ZTF ID:", args.objectId)
+                if args.comment:
+                    comment_text = ' '.join(args.comment)
+                    comment_success = db_manager.add_comment(args.objectId, comment_text)
+                    if comment_success:
+                        print("Comment added successfully to ZTF ID:", args.objectId)
+                    else:
+                        print("Error adding comment to ZTF ID:", args.objectId)
             else:
                 print("Error adding snoozed annotation to ZTF ID:", args.objectId)
             
@@ -185,6 +198,13 @@ def main():
             result = db_manager.mark_as_astronote(args.objectId)
             if result == 'success':
                 print("Astronote annotation added successfully to ZTF ID:", args.objectId)
+                if args.comment:
+                    comment_text = ' '.join(args.comment)
+                    comment_success = db_manager.add_comment(args.objectId, comment_text)
+                    if comment_success:
+                        print("Comment added successfully to ZTF ID:", args.objectId)
+                    else:
+                        print("Error adding comment to ZTF ID:", args.objectId)
             else:
                 print("Error adding astronote annotation to ZTF ID:", args.objectId)
             

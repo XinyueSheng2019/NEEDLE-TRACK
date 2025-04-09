@@ -70,8 +70,8 @@ NEEDLE-TRACK is a local system (with future migration potential to cloud or othe
    - `needle-track search --astronote/-a`
    - `needle-track search --list/-l`
 4. **Update objects**
-   - `needle-track update --objectId/-o <object_id> --followup/-f`
-   - `needle-track update --objectId/-o <object_id> --snoozed/-s`
-   - `needle-track update --objectId/-o <object_id> --astronote/-a`
+   - `needle-track update --objectId/-o <object_id> --followup/-f -c This is a comment`
+   - `needle-track update --objectId/-o <object_id> --snoozed/-s -c This is a comment`
+   - `needle-track update --objectId/-o <object_id> --astronote/-a -c This is a comment`
 5. **Add comments**
-   - `needle-track comment -o <object_id> -c "This is a comment"`
+   - `needle-track comment -o <object_id> This is a comment`

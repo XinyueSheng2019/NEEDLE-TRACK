@@ -162,7 +162,7 @@ class DatabaseManager:
             now = datetime.now().isoformat()
             self.conn.execute('''
                 UPDATE transients
-                SET is_followup = 1, updated_at = ?
+                SET is_followup = 1, is_snoozed = 0, updated_at = ?
                 WHERE objectId = ?
             ''', (now, objectId))
             # Verify the update
@@ -185,7 +185,7 @@ class DatabaseManager:
             now = datetime.now().isoformat()
             self.conn.execute('''
                 UPDATE transients
-                SET is_astronote = 1, updated_at = ?
+                SET is_astronote = 1, is_followup = 1, is_snoozed = 0, updated_at = ?
                 WHERE objectId = ?
             ''', (now, objectId))
             self.conn.commit()
